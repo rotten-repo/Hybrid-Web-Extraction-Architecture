@@ -27,7 +27,7 @@ The extraction layer is completely agnostic to the target's code quality, suppor
 ### 4. 🔄 State Management & Edge Transformation
 *   **Stateful Delta Tracking:** The engine caches historical extraction payloads in local memory and performs delta-comparisons on subsequent polls. It strictly drops duplicate data, triggering notifications/actions *only* when the target state mutates.
 *   **Edge Data Sanitization:** Cleans structural HTML tags and normalizes whitespace anomalies at the edge, delivering a clean text payload via dynamic string interpolation (`$$` variables) to the Android notification system.
-
+*   **Webhook & Distributed API Delivery (HTTP POST):** The architecture is designed for system-agnostic data delivery. Instead of being limited to local Android notifications, the engine can dynamically pipe the sanitized, extracted payload directly to external Webhooks (Zapier/Make/n8n) or custom HTTPS API endpoints. This effectively turns the mobile device into a seamless, decentralized edge-node pipeline feeding directly into enterprise databases.
 ---
 
 ## 🛠️ The Engineering Workflow
