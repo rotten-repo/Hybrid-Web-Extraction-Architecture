@@ -28,11 +28,51 @@ The extraction layer is completely agnostic to the target's code quality, suppor
 *   **Stateful Delta Tracking:** The engine caches historical extraction payloads in local memory and performs delta-comparisons on subsequent polls. It strictly drops duplicate data, triggering notifications/actions *only* when the target state mutates.
 *   **Edge Data Sanitization:** Cleans structural HTML tags and normalizes whitespace anomalies at the edge, delivering a clean text payload via dynamic string interpolation (`$$` variables) to the Android notification system.
 *   **Webhook & Distributed API Delivery (HTTP POST):** The architecture is designed for system-agnostic data delivery. Instead of being limited to local Android notifications, the engine can dynamically pipe the sanitized, extracted payload directly to external Webhooks (Zapier/Make/n8n) or custom HTTPS API endpoints. This effectively turns the mobile device into a seamless, decentralized edge-node pipeline feeding directly into enterprise databases.
+
+---
+
+## 📸 UI Overview & Feature Capabilities
+
+Below is a visual breakdown of the application interface, demonstrating how the core extraction logic and state management features are configured directly on the mobile device.
+
+### 1. Main Orchestration Dashboard
+![Main Dashboard](screenshots/main_dashboard.jpg)
+The central hub of the engine. Here, multiple concurrent extraction tasks (monitors) are managed. The UI displays the target name, the most recent extracted data payload, and the active polling intervals (including Jitter offsets). Users can toggle specific data pipelines on or off in real-time.
+
+### 2. Multi-Modal Extraction Rules
+![Extraction Rules Menu](screenshots/extraction_rules_dropdown.jpg)
+The engine provides a robust dropdown menu for defining exactly how data is pulled from the DOM. Users can adapt to any target structure by selecting Contextual Parent Traversal, Custom CSS Selectors, XPath, Regular Expressions (Regex), or raw JavaScript Code injection.
+
+### 3. Advanced JavaScript Injection (DOM Parsing)
+![JavaScript Injection Config](screenshots/js_injection_setup.jpg)
+For complex pages like modern SPAs or ATS job boards (e.g., Ashby, Lever), users can write and inject custom JavaScript blocks. This screen shows a script iterating over node arrays, scraping nested elements (Job Title, Description, Salary), and formatting a clean, structured string output *before* returning the payload to the Android OS.
+
+### 4. Pre-Extraction DOM Manipulation (Auto-Click Sequences)
+![Auto Click Sequence Setup](screenshots/auto_click_sequence.jpg)
+To bypass lazy-loading, cookie banners, or hidden tabs, users can define an "Auto-Click Sequence". This configuration demonstrates targeting a specific tab using a CSS Selector (`a[data-toggle="pill"][href="#menuCGL"]`), enforcing a programmatic delay, and triggering a physical click event to change the page state prior to data extraction.
+
+### 5. Alert Conditions, Jitter, & State Management
+![Alert Conditions and Timers](screenshots/alert_conditions_timers.jpg)
+This section controls the logic of *when* the engine decides to act:
+*   **Trigger Rules:** Set conditions like "Contains Target" to filter noise.
+*   **Stateful Tracking:** The "Ignore duplicate alerts" toggle ensures the engine caches the previous state and only pushes notifications upon a data mutation (delta).
+*   **Anti-Heuristic Timers:** Allows setting a base Interval alongside a randomized `Jitter` variable (in minutes) to prevent IP blocking by mimicking organic, unpredictable human traffic.
+*   **Dynamic Interpolation:** The Notification Message field uses the `$s` variable to dynamically inject the sanitized, extracted data payload directly into Android system notifications.
+
+### 6. Cross-Environment JSON Session Injection
+![JSON Cookie Import Dialog](screenshots/json_cookie_import.jpg)
+![Authenticated WebView](screenshots/authenticated_webview.jpg)
+To bypass captchas and strict 2FA gates without triggering bot protections, users can export their active session cookies from a desktop browser. The first image shows the interface where this JSON array is pasted. The second image shows the result: the engine instantly injects these cookies into a hidden WebView, spawning a fully authenticated session (e.g., Flipkart) completely natively.
+
+### 7. Stateful Delta History Logs
+![Extraction History Log](screenshots/extraction_history_log.jpg)
+The engine maintains a localized, chronologically ordered history cache of all state changes. This log displays the historical timeline of updates extracted from a target (e.g., government exam updates), proving the engine's reliability in maintaining sessions and tracking variations over extended periods of time.
+
 ---
 
 ## 🛠️ The Engineering Workflow
 
-**Role:** Systems Architecture, State Management, & Project Orchestration.
+**Role:** Systems Architecture, State Management, & Project Orchestration.  
 **Execution:** Designed the comprehensive system logic, database schema, and background Android threading architecture. Extensively leveraged AI-assisted workflows to rapidly prototype, write, and deploy the native boilerplate code, optimizing for speed and enterprise-grade functional output.
 
 > 🔒 **SECURITY & IP NOTICE: PRIVATE SOURCE CODE**
