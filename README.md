@@ -74,6 +74,10 @@ Below is a visual breakdown of the application interface. Each section demonstra
 <img src="screenshots/log_sample.jpg" width="400" alt="Extraction History Log"><br>
 **Description:** A localized, chronologically ordered cache of all state mutations. This log tracks historical data deltas extracted from the target, verifying the reliability of the polling intervals and maintaining an auditable timeline of updates.
 
+### 11. Dynamic Android Notifications
+<img src="screenshots/notification.png" width="400" alt="Android Notification Panel"><br>
+**Description:** The final end-user output. Once the background engine detects a state change (delta) and formats the extracted data, it pushes a real-time, native Android push notification to the user's device, ensuring critical updates are delivered instantly without requiring the application to be actively open.
+
 ---
 
 ## 🛠️ The Engineering Workflow
