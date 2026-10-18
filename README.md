@@ -32,44 +32,47 @@ The extraction layer is completely agnostic to the target's code quality, suppor
 
 ## 📸 UI Overview & Feature Capabilities
 
-Below is a visual breakdown of the application interface, demonstrating how the core extraction logic and state management features are configured directly on the mobile device.
+Below is a visual breakdown of the application interface. Each section demonstrates how specific extraction logic, scheduling, and state management features are configured directly on the mobile client.
 
-### 1. Main Orchestration Dashboard & Task Creation
-<img src="screenshots/home_ui.jpg" width="800" alt="Main Dashboard"><br>
-<img src="screenshots/adding_scrapper_task.jpg" width="800" alt="Adding Scraper Task"><br>
-The central hub of the engine. Here, multiple concurrent extraction tasks (monitors) are managed and new tasks are initialized. The UI displays the target name, the most recent extracted data payload, and active polling intervals. Users can toggle specific data pipelines on or off in real-time.
+### 1. Main Orchestration Dashboard
+<img src="screenshots/home_ui.jpg" width="400" alt="Main Dashboard"><br>
+**Description:** The central hub of the orchestration engine. This interface manages all concurrent extraction tasks (monitors). It displays the target name, the most recent extracted data payload, and provides real-time toggle controls to activate or pause specific data pipelines.
 
-### 2. Multi-Modal Extraction Rules
-<img src="screenshots/types_search_technique.jpg" width="800" alt="Extraction Rules Menu"><br>
-The engine provides a robust dropdown menu for defining exactly how data is pulled from the DOM. Users can adapt to any target structure by selecting Contextual Parent Traversal, Custom CSS Selectors, XPath, Regular Expressions (Regex), or raw JavaScript Code injection.
+### 2. Task Initialization
+<img src="screenshots/adding_scrapper_task.jpg" width="400" alt="Adding Scraper Task"><br>
+**Description:** The entry point for building a new data pipeline. Users can input the target URL and begin configuring the specific rules required to parse the DOM of that particular endpoint.
 
-### 3. Granular Searching Scope
-<img src="screenshots/granular_searching_scope.jpg" width="800" alt="Granular Searching Scope"><br>
-Prevents selector ambiguity by setting strict HTML boundaries. Users can isolate the extraction engine to only search within a specific Parent Node, ensuring highly accurate data retrieval even on deeply nested and messy DOM structures.
+### 3. Multi-Modal Extraction Rules
+<img src="screenshots/types_search_technique.jpg" width="400" alt="Extraction Rules Menu"><br>
+**Description:** A robust dropdown menu allowing the user to define exactly *how* data is pulled from the DOM. Options allow the engine to adapt to varying target structures by supporting Contextual Parent Traversal, Custom CSS Selectors, XPath, Regular Expressions (Regex), or raw JavaScript Code execution.
 
-### 4. Advanced JavaScript Injection (DOM Parsing)
-<img src="screenshots/advanced_search_using_js.jpg" width="800" alt="JavaScript Injection Config"><br>
-For complex pages like modern SPAs or ATS job boards, users can write and inject custom JavaScript blocks. This screen shows a script iterating over node arrays, scraping nested elements, and formatting a clean, structured string output *before* returning the payload to the Android OS.
+### 4. Granular Searching Scope
+<img src="screenshots/granular_searching_scope.jpg" width="400" alt="Granular Searching Scope"><br>
+**Description:** A critical feature for preventing selector ambiguity. By defining a strict Parent HTML boundary, the engine is forced to limit its DOM traversal to a highly specific node area (e.g., a specific div or table), ensuring accurate data retrieval on messy, deeply nested websites.
 
-### 5. Pre-Extraction DOM Manipulation (Auto-Click Sequences)
-<img src="screenshots/adding_click_in_hidden_webview.jpg" width="800" alt="Auto Click Sequence Setup"><br>
-To bypass lazy-loading, cookie banners, or hidden tabs, users can define an "Auto-Click Sequence". This configuration demonstrates targeting a specific tab, enforcing a programmatic delay, and triggering a physical click event to change the page state prior to data extraction.
+### 5. Advanced JavaScript Injection (DOM Parsing)
+<img src="screenshots/advanced_search_using_js.jpg" width="400" alt="JavaScript Injection Config"><br>
+**Description:** For complex targets like Single Page Applications (SPAs) or heavily obfuscated ATS job boards, users can inject raw, custom JavaScript blocks. This allows the engine to iterate over node arrays, extract nested elements, and return a clean, pre-formatted payload directly to the Android OS.
 
-### 6. Alert Conditions, Jitter, & State Management
-<img src="screenshots/timer_notification_config.jpg" width="800" alt="Alert Conditions and Timers"><br>
-This section controls the logic of *when* the engine decides to act:
-*   **Trigger Rules:** Set conditions like "Contains Target" to filter noise.
-*   **Stateful Tracking:** The "Ignore duplicate alerts" toggle ensures the engine caches the previous state and only pushes notifications upon a data mutation (delta).
-*   **Anti-Heuristic Timers:** Allows setting a base Interval alongside a randomized `Jitter` variable (in minutes) to prevent IP blocking by mimicking organic, unpredictable human traffic.
+### 6. Interactive DOM Manipulation (Auto-Click Sequences)
+<img src="screenshots/adding_click_in_hidden_webview.jpg" width="400" alt="Auto Click Sequence Setup"><br>
+**Description:** Designed to bypass lazy-loading, cookie walls, or hidden UI tabs. Users can define a programmatic "Auto-Click Sequence" targeting specific CSS Selectors. The engine triggers physical click events to mutate the page state *before* initiating the data extraction process.
 
-### 7. Cross-Environment JSON Session Injection
-<img src="screenshots/site_data_injection.jpg" width="800" alt="JSON Cookie Import Dialog"><br>
-<img src="screenshots/webview.jpg" width="800" alt="Authenticated WebView"><br>
-To bypass captchas and strict 2FA gates without triggering bot protections, users can export their active session cookies from a desktop browser. The first image shows the interface where this JSON array is pasted. The second image shows the result: the engine instantly injects these cookies into a hidden WebView, spawning a fully authenticated session natively.
+### 7. Alert Conditions, Jitter, & Scheduling
+<img src="screenshots/timer_notification_config.jpg" width="400" alt="Alert Conditions and Timers"><br>
+**Description:** The core logic controller for task execution. Users set the base polling interval alongside a randomized `Jitter` variable to spoof organic human traffic and evade bot-detection. It also configures dynamic string interpolation (`$s`), piping the sanitized data payload directly into an Android system notification.
 
-### 8. Stateful Delta History Logs
-<img src="screenshots/log_sample.jpg" width="800" alt="Extraction History Log"><br>
-The engine maintains a localized, chronologically ordered history cache of all state changes. This log displays the historical timeline of updates extracted from a target, proving the engine's reliability in maintaining sessions and tracking variations over extended periods of time.
+### 8. Cross-Environment Session Import
+<img src="screenshots/site_data_injection.jpg" width="400" alt="JSON Cookie Import Dialog"><br>
+**Description:** Solves the challenge of strict 2FA and CAPTCHA walls. Users authenticate on a secure desktop environment, export the resulting session cookies as a JSON array, and paste them into this interface. 
+
+### 9. Authenticated Hidden WebView
+<img src="screenshots/webview.jpg" width="400" alt="Authenticated WebView"><br>
+**Description:** The result of the JSON session injection. The engine dynamically spawns an invisible Android WebView, natively applying the imported cookies to create a fully authenticated, persistent session (e.g., logged into an e-commerce platform) ready for background scraping.
+
+### 10. Extraction History Logs
+<img src="screenshots/log_sample.jpg" width="400" alt="Extraction History Log"><br>
+**Description:** A localized, chronologically ordered cache of all state mutations. This log tracks historical data deltas extracted from the target, verifying the reliability of the polling intervals and maintaining an auditable timeline of updates.
 
 ---
 
