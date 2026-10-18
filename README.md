@@ -36,23 +36,28 @@ The extraction layer is completely agnostic to the target's code quality, suppor
 Below is a visual breakdown of the application interface, demonstrating how the core extraction logic and state management features are configured directly on the mobile device.
 
 ### 1. Main Orchestration Dashboard
-![Main Dashboard](screenshots/main_dashboard.jpg)
-The central hub of the engine. Here, multiple concurrent extraction tasks (monitors) are managed. The UI displays the target name, the most recent extracted data payload, and the active polling intervals (including Jitter offsets). Users can toggle specific data pipelines on or off in real-time.
+![Main Dashboard](screenshots/home_ui.jpg)
+
+The central hub of the engine. Here, multiple concurrent extraction tasks (monitors) are managed. The UI displays the target name, the most recent extracted data payload, and the active polling intervals. Users can toggle specific data pipelines on or off in real-time.
 
 ### 2. Multi-Modal Extraction Rules
-![Extraction Rules Menu](screenshots/extraction_rules_dropdown.jpg)
+![Extraction Rules Menu](screenshots/types_search_technique.jpg)
+
 The engine provides a robust dropdown menu for defining exactly how data is pulled from the DOM. Users can adapt to any target structure by selecting Contextual Parent Traversal, Custom CSS Selectors, XPath, Regular Expressions (Regex), or raw JavaScript Code injection.
 
 ### 3. Advanced JavaScript Injection (DOM Parsing)
-![JavaScript Injection Config](screenshots/js_injection_setup.jpg)
-For complex pages like modern SPAs or ATS job boards (e.g., Ashby, Lever), users can write and inject custom JavaScript blocks. This screen shows a script iterating over node arrays, scraping nested elements (Job Title, Description, Salary), and formatting a clean, structured string output *before* returning the payload to the Android OS.
+![JavaScript Injection Config](screenshots/advanced_search_using_js.jpg)
+
+For complex pages like modern SPAs or ATS job boards, users can write and inject custom JavaScript blocks. This screen shows a script iterating over node arrays, scraping nested elements, and formatting a clean, structured string output *before* returning the payload to the Android OS.
 
 ### 4. Pre-Extraction DOM Manipulation (Auto-Click Sequences)
-![Auto Click Sequence Setup](screenshots/auto_click_sequence.jpg)
-To bypass lazy-loading, cookie banners, or hidden tabs, users can define an "Auto-Click Sequence". This configuration demonstrates targeting a specific tab using a CSS Selector (`a[data-toggle="pill"][href="#menuCGL"]`), enforcing a programmatic delay, and triggering a physical click event to change the page state prior to data extraction.
+![Auto Click Sequence Setup](screenshots/adding_click_in_hidden_webview.jpg)
+
+To bypass lazy-loading, cookie banners, or hidden tabs, users can define an "Auto-Click Sequence". This configuration demonstrates targeting a specific tab using a CSS Selector, enforcing a programmatic delay, and triggering a physical click event to change the page state prior to data extraction.
 
 ### 5. Alert Conditions, Jitter, & State Management
-![Alert Conditions and Timers](screenshots/alert_conditions_timers.jpg)
+![Alert Conditions and Timers](screenshots/timer_notification_config.jpg)
+
 This section controls the logic of *when* the engine decides to act:
 *   **Trigger Rules:** Set conditions like "Contains Target" to filter noise.
 *   **Stateful Tracking:** The "Ignore duplicate alerts" toggle ensures the engine caches the previous state and only pushes notifications upon a data mutation (delta).
@@ -60,13 +65,15 @@ This section controls the logic of *when* the engine decides to act:
 *   **Dynamic Interpolation:** The Notification Message field uses the `$s` variable to dynamically inject the sanitized, extracted data payload directly into Android system notifications.
 
 ### 6. Cross-Environment JSON Session Injection
-![JSON Cookie Import Dialog](screenshots/json_cookie_import.jpg)
-![Authenticated WebView](screenshots/authenticated_webview.jpg)
-To bypass captchas and strict 2FA gates without triggering bot protections, users can export their active session cookies from a desktop browser. The first image shows the interface where this JSON array is pasted. The second image shows the result: the engine instantly injects these cookies into a hidden WebView, spawning a fully authenticated session (e.g., Flipkart) completely natively.
+![JSON Cookie Import Dialog](screenshots/site_data_injection.jpg)
+![Authenticated WebView](screenshots/webview.jpg)
+
+To bypass captchas and strict 2FA gates without triggering bot protections, users can export their active session cookies from a desktop browser. The first image shows the interface where this JSON array is pasted. The second image shows the result: the engine instantly injects these cookies into a hidden WebView, spawning a fully authenticated session natively.
 
 ### 7. Stateful Delta History Logs
-![Extraction History Log](screenshots/extraction_history_log.jpg)
-The engine maintains a localized, chronologically ordered history cache of all state changes. This log displays the historical timeline of updates extracted from a target (e.g., government exam updates), proving the engine's reliability in maintaining sessions and tracking variations over extended periods of time.
+![Extraction History Log](screenshots/log_sample.jpg)
+
+The engine maintains a localized, chronologically ordered history cache of all state changes. This log displays the historical timeline of updates extracted from a target, proving the engine's reliability in maintaining sessions and tracking variations over extended periods of time.
 
 ---
 
