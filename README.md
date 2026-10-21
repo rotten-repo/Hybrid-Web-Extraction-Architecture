@@ -503,10 +503,10 @@ The text export is human-readable and consistent, so a single parser works for e
 
 ```
 === Log Export for Amazon Tracking ===
-URL: https://amzn.eu/d/00Vr6s2L
+URL: https://example.eu/d/00V
 
 [Oct 21, 2026 - 03:41 pm]
-Package arrived at an Amazon facility at Prayagraj, Uttar Pradesh at 4:15 am Wednesday, 21 October
+Package arrived at Delhi Airport at 4:15 am Wednesday, 21 October
 
 --------------------------------------------------
 ```
