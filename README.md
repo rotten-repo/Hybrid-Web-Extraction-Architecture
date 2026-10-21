@@ -70,10 +70,10 @@ The project grew out of real problems hit while scraping and monitoring sites by
 | Area | Capability |
 |---|---|
 | **Extraction modes** | Matched element with parent traversal · Custom CSS selector · Custom XPath · Regular expression · Custom JavaScript |
-| **Scoping** | Base element boundary (whole page or a specific node) · keyword target · numeric index for the *n*-th match |
+| **Scoping** | Base Element: Whole Page · CSS Selector Scope · XPath Scope · JavaScript Code Scope · target keyword · numeric index for the *n*-th match |
 | **Rendering** | Standard fetch · Hidden background WebView for JavaScript-heavy sites |
-| **Interaction** | Ordered click sequence (CSS selectors) with a configurable wait after each click · configurable wait after page load |
-| **Authentication** | Persistent auth session · JSON cookie import from a desktop browser |
+| **Interaction** | **Wait (s)** after page load · optional Auto-Click Sequence (**Add Click Action**) with a configurable wait after each click |
+| **Authentication** | Persistent auth session with a live status indicator and in-app **Login to Site** · JSON cookie import from a desktop browser |
 | **Scheduling** | Per-monitor interval (minutes) · randomized jitter · per-monitor on/off toggle |
 | **Change detection** | Stores last extracted value · trigger rules (e.g. *Contains Target*) · case-sensitivity option · duplicate-alert suppression |
 | **Output cleaning** | Cleaned text output (tags removed, whitespace normalized) |
@@ -82,7 +82,7 @@ The project grew out of real problems hit while scraping and monitoring sites by
 | **Integrations** | Webhook / API call (POST, custom headers, `$s` body sent as UTF-8 text) |
 | **Encryption** | Optional AES-256-GCM payload encryption (PBKDF2-HMAC-SHA256 key derivation) · in-app decryption guides for Python, Node.js, PHP |
 | **Backup** | Password-protected, encrypted export and import of monitor configuration |
-| **Debugging** | "Test & Download Raw HTML" to inspect exactly what the engine sees |
+| **Debugging** | "Test & Download Rendered HTML" to inspect exactly what the engine sees after rendering |
 
 ---
 
@@ -109,7 +109,8 @@ flowchart TD
     D --> F["Wait after load<br/>(fixed seconds)"]
     E --> F
     F --> G["Click sequence<br/>click → wait → click → wait"]
-    G --> H["Extraction rule<br/>CSS / XPath / Regex / JS / Parent traversal"]
+    G --> S["Apply search scope<br/>Whole Page / CSS / XPath / JS scope"]
+    S --> H["Extraction rule<br/>CSS / XPath / Regex / JS / Parent traversal"]
     H --> I["Sanitize output<br/>strip tags, normalize whitespace"]
     I --> J{"Changed since last run<br/>and trigger rule matched?"}
     J -- "No / duplicate" --> K["Stop (no alert)"]
@@ -143,12 +144,12 @@ flowchart TD
 
 Each monitor is defined in four logical steps:
 
-1. **Search Scope**: choose the base element. Default is *Whole Page*, or restrict the search to a parent node (for example a specific `<table>`, `<tbody>`, or `<div>`).
+1. **Search Scope**: choose the **Base Element**: *Whole Page* (default), *CSS Selector Scope* (e.g. `table#data`), *XPath Scope* (e.g. `//table`), or *JavaScript Code Scope*. Everything after this step searches only inside that region.
 2. **Search Target**: a keyword to anchor on, plus a numeric **index** to pick the *n*-th occurrence inside the scope.
-3. **What to Extract**: the extraction rule and the output format (cleaned text by default).
+3. **What to Extract**: the extraction rule, its selector / XPath / pattern, an **Index** to pick which match to use, and the output format (*Cleaned Text: no tags, spaces fixed* by default).
 4. **Alert Conditions**: trigger rule, case sensitivity, duplicate suppression, interval, jitter, and the notification message.
 
-The form also offers **Keep Auth Session**, **Use Hidden WebView**, and **Test & Download Raw HTML** at the top for quick debugging.
+The top of the form holds the URL, **Keep Auth Session** (with a session status indicator and a **Login to Site** button), **Use Hidden WebView** (with a **Wait (s)** field), the optional **Auto-Click Sequence**, and a **Test & Download Rendered HTML** button for quick debugging.
 
 ### 2. Extraction modes
 
@@ -162,21 +163,30 @@ The form also offers **Keep Auth Session**, **Use Hidden WebView**, and **Test &
 
 ### 3. Hierarchical scoping and indexing
 
-Selector ambiguity is a common cause of wrong data on busy pages. Setting a strict **parent boundary** limits the engine to one region of the DOM, and the **index** selects exactly which occurrence to use, for example the third match inside a given table.
+Selector ambiguity is a common cause of wrong data on busy pages. The **Base Element** setting limits the engine to one region of the DOM before any extraction happens:
+
+| Base Element | What it does |
+|---|---|
+| **Whole Page** | Searches the entire document (default) |
+| **CSS Selector Scope** | Restricts the search to the node matched by a CSS selector, e.g. `table#data` |
+| **XPath Scope** | Restricts the search to the node matched by an XPath expression, e.g. `//table` |
+| **JavaScript Code Scope** | Defines the search region with a script, for pages where neither a selector nor an XPath is enough |
+
+Two **Index** fields then pick exactly which occurrence to use: one beside the **Target Keyword** (Step 2) and one beside the **Selector/XPath** (Step 3), for example the third match inside a given table.
 
 ### 4. Click sequences and timing
 
 Many pages only reveal data after an interaction. Each monitor can define:
 
-- **Wait after page load** (seconds) so the page can finish rendering.
-- An ordered **click sequence**: each step is a CSS selector plus a wait time (seconds). Steps run in order, each followed by its own wait, then extraction starts.
+- **Wait (s)**, set next to *Use Hidden WebView*, so the page can finish rendering before anything else happens.
+- An optional **Auto-Click Sequence**: use **Add Click Action** to append steps. Each step is a CSS selector plus a wait time (seconds). Steps run in order, each followed by its own wait, then extraction starts.
 
 Waits are deliberately **strict durations**, not "wait until visible" (see [Design Decisions](#-design-decisions)).
 
 ### 5. Hidden WebView and authenticated sessions
 
 - **Hidden background WebView**: for JavaScript-driven sites, the app creates an invisible Android WebView inside a background service, lets the page render and run its scripts, then runs the extraction.
-- **Keep Auth Session**: preserves the logged-in state between runs for sites that require login.
+- **Keep Auth Session**: preserves the logged-in state between runs for sites that require login. A status indicator shows whether a session exists (for example *No Session*), and **Login to Site** lets you sign in from within the app.
 - **JSON session import**: log in on a desktop browser (handling 2FA/CAPTCHA there), export the cookies as a JSON array, and paste them into the app. The WebView starts already authenticated, with no brittle automated login flow.
 
 ### 6. Scheduling and jitter
@@ -246,7 +256,7 @@ The central hub. Lists every monitor with its name, most recent extracted value,
 
 ### 2. Task Initialization
 <img src="screenshots/adding_scrapper_task.jpg" width="400" alt="Adding Scraper Task"><br>
-Entry point for a new pipeline: task name, target URL, auth-session and hidden-WebView options, and a **Test & Download Raw HTML** button to inspect what the engine receives.
+Entry point for a new pipeline: task name, target URL, auth-session and hidden-WebView options, and a **Test & Download Rendered HTML** button to inspect what the engine sees after rendering.
 
 ### 3. Multi-Modal Extraction Rules
 <img src="screenshots/types_search_technique.jpg" width="400" alt="Extraction Rules Menu"><br>
@@ -254,7 +264,7 @@ The extraction-rule dropdown: parent traversal, custom CSS selector, custom XPat
 
 ### 4. Granular Searching Scope
 <img src="screenshots/granular_searching_scope.jpg" width="400" alt="Granular Searching Scope"><br>
-Restrict the search to a specific parent node to remove ambiguity on busy, deeply nested pages.
+Choose Whole Page, CSS Selector Scope, XPath Scope, or JavaScript Code Scope to limit the search to one region and remove ambiguity on busy, deeply nested pages.
 
 ### 5. Advanced JavaScript Injection
 <img src="screenshots/advanced_search_using_js.jpg" width="400" alt="JavaScript Injection Config"><br>
@@ -291,6 +301,18 @@ API URL, multi-line headers, body template with `$s`, and the **Encrypt Payload*
 ### 13. In-App Decryption Guides
 <img src="screenshots/decryption_guides.jpg" width="400" alt="Decryption Guides"><br>
 Format description and copy-ready decryption code for Python, Node.js, and PHP, so a backend can be wired up quickly.
+
+### 14. Session, Hidden WebView & Auto-Click (latest editor)
+<img src="screenshots/editor_session_webview_clicks.jpg" width="400" alt="Session, Hidden WebView and Auto-Click Sequence"><br>
+URL, **Keep Auth Session** with a status indicator and **Login to Site**, **Use Hidden WebView** with its **Wait (s)** field, the optional **Auto-Click Sequence** (**Add Click Action**), and **Test & Download Rendered HTML**.
+
+### 15. Search Scope Options
+<img src="screenshots/editor_search_scope_options.jpg" width="400" alt="Search Scope Options"><br>
+The **Base Element** dropdown (Whole Page, CSS Selector Scope, XPath Scope, JavaScript Code Scope), followed by the extraction rule, selector with index, and output format.
+
+### 16. Search Target & Extraction Rules
+<img src="screenshots/editor_extraction_rules.jpg" width="400" alt="Search Target and Extraction Rules"><br>
+**Target Keyword** with index, the **Extraction Rule** dropdown (parent traversal, CSS selector, XPath, regex, JavaScript), and the alert **Trigger Rule** with the case-sensitivity option.
 
 ---
 
