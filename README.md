@@ -606,6 +606,6 @@ The source code is currently **private**. This repository documents the architec
 I am happy to provide a **live technical walkthrough** of the Android background services, extraction engine, and encryption design over a screen share.
 
 - **Name:** Soumyadip Ghosh
-- **Email:** *******
-- **LinkedIn:** www.linkedin.com/in/SamDip
+- **Email:** contact@smdp.dev
+- **LinkedIn:** linkedin.com/in/smdp
 - **GitHub:** https://github.com/rotten-repo
